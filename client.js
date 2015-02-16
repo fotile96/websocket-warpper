@@ -9,23 +9,26 @@ server.listen(LISTEN,function(){
 });
 server.on('connection',function(socket){
 	console.log('!');
-	var remote_tcpok=false;
+	// var remote_tcpok=false;
 	var pool=[];
 	var ws=io.connect(REMOTE_URL,{'force new connection': true});
+	socket.pause();
 	ws.on('connect',function(){
 		console.log('Websocket connected.');
 	});
 	socket.on('data',function(data){
-		if(remote_tcpok){
-			ws.emit('data',data);
-		}else{
-			pool.push(data);
-		}
+		// if(remote_tcpok){
+		// 	ws.emit('data',data);
+		// }else{
+		// 	pool.push(data);
+		// }
+		ws.emit('data',data);
 	});
 	ws.on('tcpok',function(){
-		remote_tcpok=true;
-		for(var i=0;i<pool.length;i++)ws.emit('data',pool[i]);
-		pool=null;
+		// remote_tcpok=true;
+		// for(var i=0;i<pool.length;i++)ws.emit('data',pool[i]);
+		// pool=null;
+		socket.resume();
 	});
 	ws.on('data',function(data){
 		if(data)socket.write(data);
